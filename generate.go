@@ -175,6 +175,30 @@ func regex(r *rand.Rand, regexStr string) (gen string) {
 	return regexGenerate(r, re, len(regexStr)*100)
 }
 
+// Regex will generate a string based upon a user syntax
+func RegexEx(regexStr string, flags syntax.Flags) string { return regexEx(globalFaker.Rand, regexStr,flags) }
+
+// Regex will generate a string based upon a user syntax
+func (f *Faker) RegexEx(regexStr string, flags syntax.Flags) string { return regexEx(f.Rand, regexStr,flags) }
+
+func regexEx(r *rand.Rand, regexStr string, flags syntax.Flags) (gen string) {
+	re, err := syntax.Parse(regexStr, flags)
+	if err != nil {
+		return "Could not parse regex string"
+	}
+
+	// Panic catch
+	defer func() {
+		if r := recover(); r != nil {
+			gen = fmt.Sprint(r)
+			return
+
+		}
+	}()
+
+	return regexGenerate(r, re, len(regexStr)*100)
+}
+
 func regexGenerate(ra *rand.Rand, re *syntax.Regexp, limit int) string {
 	if limit <= 0 {
 		panic("Length limit reached when generating output")
